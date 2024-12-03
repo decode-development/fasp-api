@@ -39,7 +39,8 @@ jobs:
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       run: |
-        ./cc-test-reporter after-build -t jacoco
+        JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage target/site/jacoco/jacoco.xml --input-type jacoco
+        ./cc-test-reporter upload-coverage
 
     # Snyk Security Scan
     - name: Run Snyk to check for vulnerabilities
