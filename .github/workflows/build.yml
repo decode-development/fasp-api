@@ -42,6 +42,22 @@ jobs:
         JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage target/site/jacoco/jacoco.xml --input-type jacoco
         ./cc-test-reporter upload-coverage
 
+    # Add Maven Wrapper validation and debug step
+    - name: Verify Maven Wrapper and Dependencies
+      run: |
+        # Check Maven Dependency Plugin version
+        echo "Checking Maven Dependency Plugin version..."
+        ./mvnw dependency:help
+
+        # Run dependency tree command
+        echo "Running dependency tree..."
+        ./mvnw dependency:tree -DoutputType=dot --batch-mode --non-recursive --file="pom.xml"
+
+        # Run with debug output
+        echo "Running with debug output..."
+        DEBUG=* ./mvnw dependency:tree -DoutputType=dot --batch-mode --non-recursive --file="pom.xml"
+
+
     # Snyk Security Scan
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/maven@master
