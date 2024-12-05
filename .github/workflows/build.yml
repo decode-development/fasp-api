@@ -12,11 +12,10 @@ defaults:
 
 env:
   JAVA_VERSION: '17'
-  UBUNTU_VERSION: 'ubuntu-22.04'
 
 jobs:
   build:
-    runs-on: ${{ env.UBUNTU_VERSION }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
@@ -39,7 +38,7 @@ jobs:
 
   test:
     needs: build
-    runs-on: ${{ env.UBUNTU_VERSION }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
@@ -70,7 +69,7 @@ jobs:
 
   code-scan:
     needs: build
-    runs-on: u${{ env.UBUNTU_VERSION }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
       with:
@@ -91,7 +90,7 @@ jobs:
 
   security-scan:
     needs: build
-    runs-on: ${{ env.UBUNTU_VERSION }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
