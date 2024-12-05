@@ -6,26 +6,30 @@ on:
   pull_request:
     branches: [ master ]
 
-jobs:
-  build-and-test:
-    runs-on: ubuntu-22.04
+defaults:
+  run:
+    shell: bash
 
+env:
+  JAVA_VERSION: '17'
+  UBUNTU_VERSION: 'ubuntu-22.04'
+
+jobs:
+  build:
+    runs-on: ${{ env.UBUNTU_VERSION }}
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0  # Required for Code Climate
 
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: ${{ env.JAVA_VERSION }}
         distribution: 'adopt'
         cache: maven
 
     - name: Build with Maven
       run: mvn clean install
 
-    # Upload build artifacts
     - name: Upload build artifacts
       if: always()
       uses: actions/upload-artifact@v4
@@ -33,10 +37,22 @@ jobs:
         name: build-artifacts
         path: target/*.jar
 
+  test:
+    needs: build
+    runs-on: ${{ env.UBUNTU_VERSION }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'adopt'
+        cache: maven
+
     - name: Run Tests
       run: mvn test
 
-    # Upload Surefire test results
     - name: Upload Surefire test results
       if: always()
       uses: actions/upload-artifact@v4
@@ -44,7 +60,6 @@ jobs:
         name: surefire-reports
         path: target/surefire-reports/
 
-    # Upload JaCoCo reports
     - name: Upload JaCoCo reports
       if: always()
       uses: actions/upload-artifact@v4
@@ -52,7 +67,15 @@ jobs:
         name: jacoco-reports
         path: target/site/jacoco/
 
-    # Code Climate Setup and Analysis
+
+  code-scan:
+    needs: build
+    runs-on: u${{ env.UBUNTU_VERSION }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
     - name: Setup Code Climate
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -66,11 +89,15 @@ jobs:
         JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage target/site/jacoco/jacoco.xml --input-type jacoco
         ./cc-test-reporter upload-coverage
 
-    # Install Snyk CLI
+  security-scan:
+    needs: build
+    runs-on: ${{ env.UBUNTU_VERSION }}
+    steps:
+    - uses: actions/checkout@v3
+
     - name: Install Snyk CLI
       run: npm install -g snyk
 
-    # Run Snyk to check for vulnerabilities
     - name: Run Snyk to check for vulnerabilities
       continue-on-error: true
       env:
