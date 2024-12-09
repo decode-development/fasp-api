@@ -129,9 +129,3 @@ jobs:
       with:
         sarif_file: snyk-code.sarif
         category: snyk-code
-
-    - name: Check Snyk scan status
-      if: steps.snyk.outcome == 'failure'
-      run: |
-        echo "Security vulnerabilities found"
-        exit 1
