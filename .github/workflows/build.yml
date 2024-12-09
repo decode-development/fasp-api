@@ -107,14 +107,14 @@ jobs:
       continue-on-error: true
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      run: snyk test --severity-threshold=high --sarif-file-output=snyk-deps.sarif
+      run: snyk test --org=e51df284-6453-4ef1-8eff-ebbb773df8f9--severity-threshold=high --sarif-file-output=snyk-deps.sarif
 
     - name: Run Snyk code analysis
       id: snyk-code
       continue-on-error: true
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      run: snyk code test --severity-threshold=high --sarif-file-output=snyk-code.sarif
+      run: snyk code test --org=e51df284-6453-4ef1-8eff-ebbb773df8f9 --severity-threshold=high --sarif-file-output=snyk-code.sarif
 
     - name: Upload results to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v3
