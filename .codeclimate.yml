@@ -32,8 +32,18 @@ checks:
     enabled: true
     config:
       threshold: 4
+  similar-code:
+    enabled: true
+  identical-code:
+    enabled: true
 
 exclude_patterns:
-- "src/test/"
-- "src/main/resources/"
+- "test/"
+- "tests/"
+- "**/test/"
+- "**/tests/"
+- "**/*Test.java"
+- "build/"
+- "target/"
 - "docs/"
+- "*.md"

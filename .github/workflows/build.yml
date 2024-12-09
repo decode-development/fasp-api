@@ -87,7 +87,7 @@ jobs:
         chmod +x ./cc-test-reporter
         ./cc-test-reporter before-build
 
-    - name: Upload coverage to Code Climate
+    - name: Run Code Climate Analysis
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       run: |
