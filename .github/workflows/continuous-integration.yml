@@ -2,6 +2,18 @@ name: Continuous Integration Pipeline
 
 on:
   push:
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.json'
+      - '**.yml'
+      - '**.properties'
+      - '**.xml'
+      - '**.sql'
+      - '**.csv'
+      - '**.zip'
+      - 'docs/**'
+      - '.gitignore'
 
 defaults:
   run:
@@ -15,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Set up JDK
       uses: actions/setup-java@v3
