@@ -381,31 +381,31 @@ public class CommitRequestRestController {
     )
     @Parameter(name = "requestId", description = "The ID of the request to validate")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "200", description = "Returns validation status")
-    public ResponseEntity<?> validateComplexRequest(@PathVariable("requestId") int requestId, Authentication auth) {
+    public ResponseEntity<ResponseCode> validateComplexRequest(@PathVariable("requestId") int requestId, Authentication auth) {
         try {
             CustomUserDetails curUser = (CustomUserDetails) auth.getPrincipal();
             if (curUser != null) {
                 if (curUser.getUserId() > 0) {
-                    CommitRequest request = commitRequestService.getCommitRequestById(requestId);
+                    CommitRequest request = commitRequestService.getCommitRequestByCommitRequestId(requestId);
                     if (request != null) {
-                        if (request.getStatus() != null) {
-                            if (request.getStatus().getId() == 1) {
+                        if (request.getCompletedDate() != null) {
+                            if (Integer.valueOf(1).equals(request.getStatus())) {
                                 // Deeply nested validation logic
-                                return new ResponseEntity(new ResponseCode("static.message.validationPassed"), HttpStatus.OK);
+                                return new ResponseEntity<>(new ResponseCode("static.message.validationPassed"), HttpStatus.OK);
                             } else {
-                                return new ResponseEntity(new ResponseCode("static.message.invalidStatus"), HttpStatus.BAD_REQUEST);
+                                return new ResponseEntity<>(new ResponseCode("static.message.invalidStatus"), HttpStatus.BAD_REQUEST);
                             }
                         }
-                        return new ResponseEntity(new ResponseCode("static.message.noStatus"), HttpStatus.BAD_REQUEST);
+                        return new ResponseEntity<>(new ResponseCode("static.message.noStatus"), HttpStatus.BAD_REQUEST);
                     }
-                    return new ResponseEntity(new ResponseCode("static.message.requestNotFound"), HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(new ResponseCode("static.message.requestNotFound"), HttpStatus.NOT_FOUND);
                 }
-                return new ResponseEntity(new ResponseCode("static.message.invalidUser"), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new ResponseCode("static.message.invalidUser"), HttpStatus.FORBIDDEN);
             }
-            return new ResponseEntity(new ResponseCode("static.message.unauthorized"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new ResponseCode("static.message.unauthorized"), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             logger.error("Error validating complex request", e);
-            return new ResponseEntity(new ResponseCode("static.message.validationFailed"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ResponseCode("static.message.validationFailed"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
