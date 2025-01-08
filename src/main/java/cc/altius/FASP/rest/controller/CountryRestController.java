@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cc.altius.FASP.rest.controller;
 
 import cc.altius.FASP.model.Country;
@@ -66,13 +61,13 @@ public class CountryRestController {
     )
     @ApiResponse(content = @Content(mediaType = "text/json", array = @ArraySchema(schema = @Schema(implementation = Country.class))), responseCode = "200", description = "Returns the list of active countries")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "500", description = "Internal error that prevented the retrieval of the country list")
-    public ResponseEntity getCountryList(Authentication auth) {
+    public ResponseEntity<Object> getCountryList(Authentication auth) {
         try {
             CustomUserDetails curUser = this.userService.getCustomUserByUserIdForApi(((CustomUserDetails) auth.getPrincipal()).getUserId(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getMethod(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI());
-            return new ResponseEntity(this.countryService.getCountryList(true, curUser), HttpStatus.OK); // 200
+            return new ResponseEntity<>(this.countryService.getCountryList(true, curUser), HttpStatus.OK); // 200
         } catch (Exception e) {
             logger.error("Error while getting country list", e);
-            return new ResponseEntity(new ResponseCode("static.message.listFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+            return new ResponseEntity<>(new ResponseCode("static.message.listFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
         }
     }
 
@@ -89,13 +84,13 @@ public class CountryRestController {
     )
     @ApiResponse(content = @Content(mediaType = "text/json", array = @ArraySchema(schema = @Schema(implementation = Country.class))), responseCode = "200", description = "Returns the list of all countries")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "500", description = "Internal error that prevented the retrieval of the country list")
-    public ResponseEntity getCountryListAll(Authentication auth) {
+    public ResponseEntity<Object> getCountryListAll(Authentication auth) {
         try {
             CustomUserDetails curUser = this.userService.getCustomUserByUserIdForApi(((CustomUserDetails) auth.getPrincipal()).getUserId(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getMethod(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI());
-            return new ResponseEntity(this.countryService.getCountryList(false, curUser), HttpStatus.OK); // 200
+            return new ResponseEntity<>(this.countryService.getCountryList(false, curUser), HttpStatus.OK); // 200
         } catch (Exception e) {
             logger.error("Error while getting country list all", e);
-            return new ResponseEntity(new ResponseCode("static.message.listFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+            return new ResponseEntity<>(new ResponseCode("static.message.listFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
         }
     }
 
@@ -115,16 +110,16 @@ public class CountryRestController {
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = Country.class)), responseCode = "200", description = "Returns the country with the given ID")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "404", description = "Unable to find the country with the given ID")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "500", description = "Internal error that prevented the retrieval of the country")
-    public ResponseEntity getCountryById(@PathVariable("countryId") int countryId, Authentication auth) {
+    public ResponseEntity<Object> getCountryById(@PathVariable("countryId") int countryId, Authentication auth) {
         try {
             CustomUserDetails curUser = this.userService.getCustomUserByUserIdForApi(((CustomUserDetails) auth.getPrincipal()).getUserId(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getMethod(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI());
-            return new ResponseEntity(this.countryService.getCountryById(countryId, curUser), HttpStatus.OK); // 200
+            return new ResponseEntity<>(this.countryService.getCountryById(countryId, curUser), HttpStatus.OK); // 200
         } catch (EmptyResultDataAccessException er) {
             logger.error("Error while getting country id=" + countryId, er);
-            return new ResponseEntity(new ResponseCode("static.message.listFailed"), HttpStatus.NOT_FOUND); //404
+            return new ResponseEntity<>(new ResponseCode("static.message.listFailed"), HttpStatus.NOT_FOUND); //404
         } catch (Exception e) {
             logger.error("Error while getting country id=" + countryId, e);
-            return new ResponseEntity(new ResponseCode("static.message.listFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+            return new ResponseEntity<>(new ResponseCode("static.message.listFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
         }
     }
 
@@ -148,22 +143,22 @@ public class CountryRestController {
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "200", description = "Returns a success response")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "406", description = "The country already exists")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "500", description = "Internal error that prevented the creation of the country")
-    public ResponseEntity addCountry(@RequestBody(required = true) Country country, Authentication auth) {
+    public ResponseEntity<Object> addCountry(@RequestBody(required = true) Country country, Authentication auth) {
         try {
             CustomUserDetails curUser = this.userService.getCustomUserByUserIdForApi(((CustomUserDetails) auth.getPrincipal()).getUserId(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getMethod(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI());
             int countryId = this.countryService.addCountry(country, curUser);
             if (countryId > 0) {
-                return new ResponseEntity(new ResponseCode("static.message.addSuccess"), HttpStatus.OK); // 200
+                return new ResponseEntity<>(new ResponseCode("static.message.addSuccess"), HttpStatus.OK); // 200
             } else {
                 logger.error("Error while adding country no Id returned");
-                return new ResponseEntity(new ResponseCode("static.message.addFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+                return new ResponseEntity<>(new ResponseCode("static.message.addFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
             }
         } catch (DuplicateKeyException e) {
             logger.error("Error while adding country", e);
-            return new ResponseEntity(new ResponseCode("static.message.alreadyExists"), HttpStatus.NOT_ACCEPTABLE); // 406
+            return new ResponseEntity<>(new ResponseCode("static.message.alreadyExists"), HttpStatus.NOT_ACCEPTABLE); // 406
         } catch (Exception e) {
             logger.error("Error while adding country", e);
-            return new ResponseEntity(new ResponseCode("static.message.addFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+            return new ResponseEntity<>(new ResponseCode("static.message.addFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
         }
 
     }
@@ -188,22 +183,22 @@ public class CountryRestController {
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "200", description = "Returns a success message")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "406", description = "The country already exists")
     @ApiResponse(content = @Content(mediaType = "text/json", schema = @Schema(implementation = ResponseCode.class)), responseCode = "500", description = "Internal error that prevented the update of the country")
-    public ResponseEntity editCountry(@RequestBody(required = true) Country country, Authentication auth) {
+    public ResponseEntity<Object> editCountry(@RequestBody(required = true) Country country, Authentication auth) {
         try {
             CustomUserDetails curUser = this.userService.getCustomUserByUserIdForApi(((CustomUserDetails) auth.getPrincipal()).getUserId(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getMethod(), ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI());
             int updatedId = this.countryService.updateCountry(country, curUser);
             if (updatedId > 0) {
-                return new ResponseEntity(new ResponseCode("static.message.updateSuccess"), HttpStatus.OK); // 200
+                return new ResponseEntity<>(new ResponseCode("static.message.updateSuccess"), HttpStatus.OK); // 200
             } else {
                 logger.error("Error while updating country, 0 rows updated");
-                return new ResponseEntity(new ResponseCode("static.message.updateFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+                return new ResponseEntity<>(new ResponseCode("static.message.updateFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
             }
         } catch (DuplicateKeyException e) {
             logger.error("Error while updating country", e);
-            return new ResponseEntity(new ResponseCode("static.message.alreadyExists"), HttpStatus.NOT_ACCEPTABLE); // 406
+            return new ResponseEntity<>(new ResponseCode("static.message.alreadyExists"), HttpStatus.NOT_ACCEPTABLE); // 406
         } catch (Exception e) {
             logger.error("Error while updating country", e);
-            return new ResponseEntity(new ResponseCode("static.message.updateFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+            return new ResponseEntity<>(new ResponseCode("static.message.updateFailed"), HttpStatus.INTERNAL_SERVER_ERROR); // 500
         }
     }
 
